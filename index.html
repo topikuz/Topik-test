@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국어 TEST — Koreyscha Test Platformasi</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f14;
+    --surface: #1a1a24;
+    --card: #22222e;
+    --border: #2e2e40;
+    --accent: #c73e6a;
+    --accent2: #7c5cbf;
+    --gold: #e8b84b;
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --success: #4caf82;
+    --error: #e05555;
+    --radius: 14px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top:0; z-index:50;
+  }
+  .logo { font-size: 1.25rem; font-weight:700; letter-spacing:.04em; }
+  .logo span { color: var(--accent); }
+  .lang-switcher { display:flex; gap:6px; }
+  .lang-btn {
+    background: none; border:1px solid var(--border);
+    color: var(--muted); padding:4px 10px; border-radius:20px;
+    font-size:.75rem; cursor:pointer; transition:.2s;
+  }
+  .lang-btn.active, .lang-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* ── MAIN WRAPPER ── */
+  .main { width:100%; max-width:480px; padding:32px 16px; }
+
+  /* ── SCREEN ── */
+  .screen { display:none; }
+  .screen.active { display:block; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+  }
+
+  .card-title {
+    font-size:1.5rem; font-weight:700;
+    margin-bottom:6px;
+  }
+  .card-sub {
+    color:var(--muted); font-size:.875rem;
+    margin-bottom:28px;
+  }
+
+  /* ── FORM ── */
+  .field { margin-bottom:16px; }
+  .field label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:6px; letter-spacing:.06em; text-transform:uppercase; }
+  .field input {
+    width:100%; background:var(--surface); border:1px solid var(--border);
+    border-radius:9px; padding:12px 14px; color:var(--text);
+    font-size:.95rem; transition:.2s; font-family:inherit;
+  }
+  .field input:focus { outline:none; border-color:var(--accent); }
+
+  .btn {
+    width:100%; padding:13px; border:none; border-radius:9px;
+    font-size:1rem; font-weight:600; cursor:pointer; transition:.2s;
+    font-family:inherit; letter-spacing:.03em;
+  }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:#a8304f; }
+  .btn-ghost {
+    background:none; border:1px solid var(--border); color:var(--muted);
+    margin-top:10px;
+  }
+  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+  .msg { font-size:.85rem; margin-top:10px; text-align:center; }
+  .msg.error { color:var(--error); }
+  .msg.success { color:var(--success); }
+
+  .link-text { color:var(--muted); font-size:.85rem; text-align:center; margin-top:18px; }
+  .link-text a { color:var(--accent); cursor:pointer; text-decoration:none; }
+
+  /* ── DASHBOARD ── */
+  .dash-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:24px;
+  }
+  .greeting { font-size:1.3rem; font-weight:700; }
+  .greeting span { color:var(--accent); }
+  .logout-btn {
+    background:none; border:1px solid var(--border);
+    color:var(--muted); padding:6px 14px; border-radius:20px;
+    cursor:pointer; font-size:.8rem; transition:.2s;
+  }
+  .logout-btn:hover { border-color:var(--error); color:var(--error); }
+
+  /* Stats */
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+  .stat-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:16px; text-align:center;
+  }
+  .stat-num { font-size:1.8rem; font-weight:700; }
+  .stat-label { color:var(--muted); font-size:.75rem; margin-top:2px; }
+  .stat-card.accent .stat-num { color:var(--accent); }
+  .stat-card.gold .stat-num { color:var(--gold); }
+  .stat-card.success .stat-num { color:var(--success); }
+  .stat-card.purple .stat-num { color:var(--accent2); }
+
+  /* Category */
+  .section-title { font-size:.75rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px; }
+  .cat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+  .cat-btn {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:16px 12px; text-align:center;
+    cursor:pointer; transition:.2s;
+  }
+  .cat-btn:hover { border-color:var(--accent); background:var(--card); }
+  .cat-icon { font-size:1.6rem; margin-bottom:6px; }
+  .cat-name { font-size:.85rem; font-weight:600; }
+  .cat-count { font-size:.75rem; color:var(--muted); margin-top:2px; }
+
+  /* History */
+  .history-list { display:flex; flex-direction:column; gap:8px; }
+  .history-item {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .history-cat { font-size:.85rem; font-weight:600; }
+  .history-date { font-size:.75rem; color:var(--muted); margin-top:2px; }
+  .history-score {
+    font-size:1rem; font-weight:700;
+  }
+  .score-high { color:var(--success); }
+  .score-mid { color:var(--gold); }
+  .score-low { color:var(--error); }
+
+  /* ── QUIZ ── */
+  .quiz-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .quiz-back {
+    background:none; border:none; color:var(--muted);
+    font-size:1.2rem; cursor:pointer; padding:4px;
+  }
+  .quiz-progress-text { font-size:.85rem; color:var(--muted); }
+
+  .progress-bar-wrap {
+    background:var(--surface); border-radius:99px;
+    height:6px; margin-bottom:28px; overflow:hidden;
+  }
+  .progress-bar {
+    height:100%; background:linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius:99px; transition:width .4s ease;
+  }
+
+  .question-block { margin-bottom:24px; }
+  .question-kor {
+    font-size:2.2rem; font-weight:700; text-align:center;
+    margin-bottom:8px; color:var(--accent);
+    font-family:'Noto Sans KR', sans-serif;
+  }
+  .question-hint { text-align:center; color:var(--muted); font-size:.85rem; margin-bottom:24px; }
+
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .option {
+    background:var(--surface); border:1.5px solid var(--border);
+    border-radius:11px; padding:14px 18px; cursor:pointer;
+    font-size:.95rem; transition:.2s; text-align:left;
+    font-family:inherit;
+    color: var(--text);
+  }
+  .option:hover:not(.disabled) { border-color:var(--accent); background:var(--card); }
+  .option.correct { border-color:var(--success); background:rgba(76,175,130,.12); color:var(--success); }
+  .option.wrong { border-color:var(--error); background:rgba(224,85,85,.10); color:var(--error); }
+  .option.disabled { cursor:default; }
+
+  .feedback {
+    text-align:center; margin-top:18px; font-size:.9rem;
+    min-height:20px; font-weight:500;
+  }
+  .feedback.correct { color:var(--success); }
+  .feedback.wrong { color:var(--error); }
+
+  .quiz-next-wrap { margin-top:20px; }
+
+  /* ── RESULT ── */
+  .result-circle {
+    width:110px; height:110px; border-radius:50%;
+    border:4px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    margin:0 auto 20px;
+  }
+  .result-pct { font-size:1.8rem; font-weight:700; }
+  .result-sub { font-size:.7rem; color:var(--muted); }
+  .result-title { text-align:center; font-size:1.2rem; font-weight:700; margin-bottom:6px; }
+  .result-msg { text-align:center; color:var(--muted); font-size:.85rem; margin-bottom:24px; }
+  .result-breakdown { display:flex; gap:12px; justify-content:center; margin-bottom:28px; }
+  .rb-item { text-align:center; }
+  .rb-num { font-size:1.3rem; font-weight:700; }
+  .rb-label { font-size:.72rem; color:var(--muted); }
+  .rb-item.g .rb-num { color:var(--success); }
+  .rb-item.r .rb-num { color:var(--error); }
+
+  .divider { height:1px; background:var(--border); margin:20px 0; }
+
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">한국어 <span>TEST</span></div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('uz')">UZ</button>
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('kr')">한국어</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ── LOGIN ── -->
+  <div class="screen active" id="screen-login">
+    <div class="card">
+      <div class="card-title" data-i="login_title">Kirish</div>
+      <div class="card-sub" data-i="login_sub">Hisobingizga kiring</div>
+
+      <div class="field">
+        <label data-i="label_username">Foydalanuvchi nomi</label>
+        <input type="text" id="login-user" placeholder="admin" autocomplete="off">
+      </div>
+      <div class="field">
+        <label data-i="label_password">Parol</label>
+        <input type="password" id="login-pass" placeholder="••••••">
+      </div>
+      <div class="msg error" id="login-err"></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="doLogin()" data-i="btn_login">Kirish</button>
+      <div class="link-text"><span data-i="no_account">Hisobingiz yo'qmi?</span> <a onclick="showReg()" data-i="register">Ro'yxatdan o'tish</a></div>
+    </div>
+  </div>
+
+  <!-- ── REGISTER ── -->
+  <div class="screen" id="screen-register">
+    <div class="card">
+      <div class="card-title" data-i="reg_title">Ro'yxatdan o'tish</div>
+      <div class="card-sub" data-i="reg_sub">Yangi hisob yarating</div>
+
+      <div class="field">
+        <label data-i="label_username">Foydalanuvchi nomi</label>
+        <input type="text" id="reg-user" autocomplete="off">
+      </div>
+      <div class="field">
+        <label data-i="label_password">Parol</label>
+        <input type="password" id="reg-pass">
+      </div>
+      <div class="field">
+        <label data-i="label_confirm">Parolni tasdiqlang</label>
+        <input type="password" id="reg-pass2">
+      </div>
+      <div class="msg error" id="reg-err"></div>
+      <div class="msg success" id="reg-ok"></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="doRegister()" data-i="btn_register">Ro'yxatdan o'tish</button>
+      <button class="btn btn-ghost" onclick="showLogin()" data-i="back_login">← Orqaga</button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="screen" id="screen-dash">
+    <div class="dash-header">
+      <div>
+        <div class="greeting" data-i="greeting_pre">Salom, <span id="dash-username"></span>! 👋</div>
+        <div style="color:var(--muted);font-size:.8rem;margin-top:2px" data-i="greeting_sub">Bugun nima o'rganamiz?</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" data-i="btn_logout">Chiqish</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label" data-i="stat_tests">Jami testlar</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-num" id="stat-avg">0%</div>
+        <div class="stat-label" data-i="stat_avg">O'rtacha ball</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-num" id="stat-best">0%</div>
+        <div class="stat-label" data-i="stat_best">Eng yuqori</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-num" id="stat-streak">0</div>
+        <div class="stat-label" data-i="stat_streak">Ketma-ket kun</div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="section-title" data-i="categories">Mavzular</div>
+    <div class="cat-grid">
+      <div class="cat-btn" onclick="startQuiz('hangul')">
+        <div class="cat-icon">🔤</div>
+        <div class="cat-name" data-i="cat_hangul">Hangul harflari</div>
+        <div class="cat-count">10 savol</div>
+      </div>
+      <div class="cat-btn" onclick="startQuiz('numbers')">
+        <div class="cat-icon">🔢</div>
+        <div class="cat-name" data-i="cat_numbers">Raqamlar</div>
+        <div class="cat-count">10 savol</div>
+      </div>
+      <div class="cat-btn" onclick="startQuiz('greeting')">
+        <div class="cat-icon">👋</div>
+        <div class="cat-name" data-i="cat_greeting">Salomlashish</div>
+        <div class="cat-count">10 savol</div>
+      </div>
+      <div class="cat-btn" onclick="startQuiz('colors')">
+        <div class="cat-icon">🎨</div>
+        <div class="cat-name" data-i="cat_colors">Ranglar</div>
+        <div class="cat-count">10 savol</div>
+      </div>
+      <div class="cat-btn" onclick="startQuiz('food')">
+        <div class="cat-icon">🍜</div>
+        <div class="cat-name" data-i="cat_food">Ovqatlar</div>
+        <div class="cat-count">10 savol</div>
+      </div>
+      <div class="cat-btn" onclick="startQuiz('days')">
+        <div class="cat-icon">📅</div>
+        <div class="cat-name" data-i="cat_days">Hafta kunlari</div>
+        <div class="cat-count">7 savol</div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="section-title" data-i="recent">So'nggi natijalar</div>
+    <div class="history-list" id="history-list">
+      <div style="color:var(--muted);font-size:.85rem;text-align:center;padding:16px" data-i="no_history">Hali test yechmadingiz</div>
+    </div>
+  </div>
+
+  <!-- ── QUIZ ── -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <button class="quiz-back" onclick="backToDash()">←</button>
+      <span class="quiz-progress-text" id="quiz-progress">1 / 10</span>
+      <span style="color:var(--accent);font-size:.85rem;font-weight:600" id="quiz-score-live">⭐ 0</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:10%"></div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-kor" id="q-kor"></div>
+      <div class="question-hint" id="q-hint"></div>
+    </div>
+
+    <div class="options" id="options-wrap"></div>
+    <div class="feedback" id="q-feedback"></div>
+    <div class="quiz-next-wrap" id="next-wrap" style="display:none">
+      <button class="btn btn-primary" onclick="nextQuestion()" data-i="btn_next">Keyingisi →</button>
+    </div>
+  </div>
+
+  <!-- ── RESULT ── -->
+  <div class="screen" id="screen-result">
+    <div class="card">
+      <div class="result-circle">
+        <div class="result-pct" id="res-pct">0%</div>
+        <div class="result-sub" data-i="result_score">BALL</div>
+      </div>
+      <div class="result-title" id="res-title">Zo'r!</div>
+      <div class="result-msg" id="res-msg"></div>
+      <div class="result-breakdown">
+        <div class="rb-item g"><div class="rb-num" id="res-correct">0</div><div class="rb-label" data-i="correct">To'g'ri</div></div>
+        <div class="rb-item"><div class="rb-num" id="res-total-q" style="color:var(--muted)">0</div><div class="rb-label" data-i="total_q">Jami</div></div>
+        <div class="rb-item r"><div class="rb-num" id="res-wrong">0</div><div class="rb-label" data-i="wrong">Noto'g'ri</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="backToDash()" data-i="btn_home">Bosh sahifaga</button>
+      <button class="btn btn-ghost" onclick="retryQuiz()" data-i="btn_retry">Qayta urinish</button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ════════════════════════════════
+//  I18N
+// ════════════════════════════════
+const LANG = {
+  uz: {
+    login_title:"Kirish", login_sub:"Hisobingizga kiring",
+    label_username:"Foydalanuvchi nomi", label_password:"Parol",
+    label_confirm:"Parolni tasdiqlang", btn_login:"Kirish",
+    no_account:"Hisobingiz yo'qmi?", register:"Ro'yxatdan o'tish",
+    reg_title:"Ro'yxatdan o'tish", reg_sub:"Yangi hisob yarating",
+    btn_register:"Ro'yxatdan o'tish", back_login:"← Orqaga",
+    greeting_pre:"Salom,", greeting_sub:"Bugun nima o'rganamiz?",
+    btn_logout:"Chiqish", stat_tests:"Jami testlar", stat_avg:"O'rtacha ball",
+    stat_best:"Eng yuqori", stat_streak:"Ketma-ket kun",
+    categories:"Mavzular", cat_hangul:"Hangul harflari", cat_numbers:"Raqamlar",
+    cat_greeting:"Salomlashish", cat_colors:"Ranglar", cat_food:"Ovqatlar", cat_days:"Hafta kunlari",
+    recent:"So'nggi natijalar", no_history:"Hali test yechmadingiz",
+    btn_next:"Keyingisi →", result_score:"BALL", correct:"To'g'ri", total_q:"Jami", wrong:"Noto'g'ri",
+    btn_home:"Bosh sahifaga", btn_retry:"Qayta urinish",
+    err_fill:"Barcha maydonlarni to'ldiring", err_pass:"Parollar mos kelmadi",
+    err_exists:"Bu nom band", err_short:"Parol kamida 4 ta belgi",
+    err_wrong:"Noto'g'ri nom yoki parol",
+    ok_reg:"Muvaffaqiyatli ro'yxatdan o'tdingiz! Kiring.",
+    q_hint:"Koreycha so'zni tarjima qiling",
+    r_excellent:"Ajoyib! 🎉", r_good:"Yaxshi! 👏", r_ok:"Davom eting 💪", r_low:"Ko'proq mashq qiling 📚",
+  },
+  ru: {
+    login_title:"Вход", login_sub:"Войдите в свой аккаунт",
+    label_username:"Имя пользователя", label_password:"Пароль",
+    label_confirm:"Подтвердите пароль", btn_login:"Войти",
+    no_account:"Нет аккаунта?", register:"Зарегистрироваться",
+    reg_title:"Регистрация", reg_sub:"Создайте новый аккаунт",
+    btn_register:"Зарегистрироваться", back_login:"← Назад",
+    greeting_pre:"Привет,", greeting_sub:"Что учим сегодня?",
+    btn_logout:"Выйти", stat_tests:"Всего тестов", stat_avg:"Средний балл",
+    stat_best:"Лучший", stat_streak:"Дней подряд",
+    categories:"Темы", cat_hangul:"Алфавит Хангыль", cat_numbers:"Цифры",
+    cat_greeting:"Приветствия", cat_colors:"Цвета", cat_food:"Еда", cat_days:"Дни недели",
+    recent:"Последние результаты", no_history:"Тестов ещё нет",
+    btn_next:"Далее →", result_score:"БАЛЛ", correct:"Правильно", total_q:"Всего", wrong:"Неверно",
+    btn_home:"На главную", btn_retry:"Попробовать снова",
+    err_fill:"Заполните все поля", err_pass:"Пароли не совпадают",
+    err_exists:"Имя занято", err_short:"Пароль минимум 4 символа",
+    err_wrong:"Неверное имя или пароль",
+    ok_reg:"Успешно зарегистрированы! Войдите.",
+    q_hint:"Переведите корейское слово",
+    r_excellent:"Отлично! 🎉", r_good:"Хорошо! 👏", r_ok:"Продолжайте 💪", r_low:"Практикуйтесь больше 📚",
+  },
+  en: {
+    login_title:"Sign In", login_sub:"Log into your account",
+    label_username:"Username", label_password:"Password",
+    label_confirm:"Confirm password", btn_login:"Sign In",
+    no_account:"No account?", register:"Register",
+    reg_title:"Register", reg_sub:"Create a new account",
+    btn_register:"Create Account", back_login:"← Back",
+    greeting_pre:"Hello,", greeting_sub:"What are we learning today?",
+    btn_logout:"Log Out", stat_tests:"Total Tests", stat_avg:"Average Score",
+    stat_best:"Best Score", stat_streak:"Day Streak",
+    categories:"Topics", cat_hangul:"Hangul Alphabet", cat_numbers:"Numbers",
+    cat_greeting:"Greetings", cat_colors:"Colors", cat_food:"Food", cat_days:"Days of Week",
+    recent:"Recent Results", no_history:"No tests yet",
+    btn_next:"Next →", result_score:"SCORE", correct:"Correct", total_q:"Total", wrong:"Wrong",
+    btn_home:"Home", btn_retry:"Try Again",
+    err_fill:"Fill in all fields", err_pass:"Passwords don't match",
+    err_exists:"Username taken", err_short:"Password min 4 chars",
+    err_wrong:"Wrong username or password",
+    ok_reg:"Registered successfully! Please log in.",
+    q_hint:"Translate the Korean word",
+    r_excellent:"Excellent! 🎉", r_good:"Good job! 👏", r_ok:"Keep going 💪", r_low:"Practice more 📚",
+  },
+  kr: {
+    login_title:"로그인", login_sub:"계정에 로그인하세요",
+    label_username:"사용자 이름", label_password:"비밀번호",
+    label_confirm:"비밀번호 확인", btn_login:"로그인",
+    no_account:"계정이 없으신가요?", register:"회원가입",
+    reg_title:"회원가입", reg_sub:"새 계정을 만드세요",
+    btn_register:"가입하기", back_login:"← 뒤로",
+    greeting_pre:"안녕하세요,", greeting_sub:"오늘 무엇을 배울까요?",
+    btn_logout:"로그아웃", stat_tests:"총 테스트", stat_avg:"평균 점수",
+    stat_best:"최고 점수", stat_streak:"연속 일수",
+    categories:"주제", cat_hangul:"한글 알파벳", cat_numbers:"숫자",
+    cat_greeting:"인사", cat_colors:"색깔", cat_food:"음식", cat_days:"요일",
+    recent:"최근 결과", no_history:"아직 테스트가 없습니다",
+    btn_next:"다음 →", result_score:"점수", correct:"정답", total_q:"전체", wrong:"오답",
+    btn_home:"홈으로", btn_retry:"다시 시도",
+    err_fill:"모든 항목을 입력하세요", err_pass:"비밀번호가 일치하지 않습니다",
+    err_exists:"이미 사용 중인 이름", err_short:"비밀번호 최소 4자",
+    err_wrong:"잘못된 이름 또는 비밀번호",
+    ok_reg:"회원가입 성공! 로그인하세요.",
+    q_hint:"한국어 단어를 번역하세요",
+    r_excellent:"훌륭해요! 🎉", r_good:"잘했어요! 👏", r_ok:"계속하세요 💪", r_low:"더 연습하세요 📚",
+  }
+};
+
+let currentLang = 'uz';
+
+function t(key){ return (LANG[currentLang]||LANG.uz)[key] || key; }
+
+function setLang(l){
+  currentLang = l;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent.toLowerCase()===l||b.textContent==='한국어'&&l==='kr');
+  });
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    el.textContent = t(el.dataset.i);
+  });
+  document.documentElement.lang = l;
+}
+
+// ════════════════════════════════
+//  USERS (localStorage)
+// ════════════════════════════════
+function getUsers(){ return JSON.parse(localStorage.getItem('kr_users')||'{}'); }
+function saveUsers(u){ localStorage.setItem('kr_users', JSON.stringify(u)); }
+function getSession(){ return localStorage.getItem('kr_session'); }
+function setSession(u){ localStorage.setItem('kr_session', u); }
+function clearSession(){ localStorage.removeItem('kr_session'); }
+
+function getUserData(u){
+  const all = JSON.parse(localStorage.getItem('kr_data')||'{}');
+  return all[u] || { history:[], streak:0, lastDay:null };
+}
+function saveUserData(u, d){
+  const all = JSON.parse(localStorage.getItem('kr_data')||'{}');
+  all[u] = d;
+  localStorage.setItem('kr_data', JSON.stringify(all));
+}
+
+// ════════════════════════════════
+//  SCREENS
+// ════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function showLogin(){ showScreen('login'); }
+function showReg(){ showScreen('register'); }
+
+// ════════════════════════════════
+//  AUTH
+// ════════════════════════════════
+function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if(!u||!p){ document.getElementById('login-err').textContent=t('err_fill'); return; }
+  const users = getUsers();
+  if(!users[u] || users[u]!==p){
+    document.getElementById('login-err').textContent=t('err_wrong'); return;
+  }
+  document.getElementById('login-err').textContent='';
+  setSession(u);
+  openDash(u);
+}
+
+function doRegister(){
+  const u = document.getElementById('reg-user').value.trim();
+  const p = document.getElementById('reg-pass').value;
+  const p2= document.getElementById('reg-pass2').value;
+  const err = document.getElementById('reg-err');
+  const ok  = document.getElementById('reg-ok');
+  err.textContent=''; ok.textContent='';
+  if(!u||!p||!p2){ err.textContent=t('err_fill'); return; }
+  if(p.length<4){ err.textContent=t('err_short'); return; }
+  if(p!==p2){ err.textContent=t('err_pass'); return; }
+  const users = getUsers();
+  if(users[u]){ err.textContent=t('err_exists'); return; }
+  users[u]=p; saveUsers(users);
+  ok.textContent=t('ok_reg');
+  setTimeout(()=>{ showLogin(); ok.textContent=''; }, 1500);
+}
+
+function doLogout(){ clearSession(); showLogin(); }
+
+// ════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════
+function openDash(u){
+  document.getElementById('dash-username').textContent = u;
+  const data = getUserData(u);
+  const hist = data.history || [];
+  // stats
+  document.getElementById('stat-total').textContent = hist.length;
+  if(hist.length){
+    const avg = Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length);
+    const best = Math.max(...hist.map(h=>h.pct));
+    document.getElementById('stat-avg').textContent = avg+'%';
+    document.getElementById('stat-best').textContent = best+'%';
+  } else {
+    document.getElementById('stat-avg').textContent='0%';
+    document.getElementById('stat-best').textContent='0%';
+  }
+  document.getElementById('stat-streak').textContent = data.streak||0;
+
+  // history
+  const hl = document.getElementById('history-list');
+  if(!hist.length){
+    hl.innerHTML = `<div style="color:var(--muted);font-size:.85rem;text-align:center;padding:16px">${t('no_history')}</div>`;
+  } else {
+    const catNames={hangul:t('cat_hangul'),numbers:t('cat_numbers'),greeting:t('cat_greeting'),colors:t('cat_colors'),food:t('cat_food'),days:t('cat_days')};
+    hl.innerHTML = [...hist].reverse().slice(0,5).map(h=>{
+      const cls = h.pct>=80?'score-high':h.pct>=50?'score-mid':'score-low';
+      return `<div class="history-item">
+        <div><div class="history-cat">${catNames[h.cat]||h.cat}</div><div class="history-date">${h.date}</div></div>
+        <div class="history-score ${cls}">${h.pct}%</div>
+      </div>`;
+    }).join('');
+  }
+  showScreen('dash');
+}
+
+// ════════════════════════════════
+//  QUIZ DATA
+// ════════════════════════════════
+const QUIZZES = {
+  hangul:[
+    {q:'ㄱ',a:['G / K','M','N','B'],correct:0,hint:'자음 (jaeum)'},
+    {q:'ㄴ',a:['B','N','R','S'],correct:1,hint:'자음 (jaeum)'},
+    {q:'ㄷ',a:['G','B','D / T','M'],correct:2,hint:'자음 (jaeum)'},
+    {q:'ㄹ',a:['N','R / L','S','J'],correct:1,hint:'자음 (jaeum)'},
+    {q:'ㅁ',a:['M','N','G','B'],correct:0,hint:'자음 (jaeum)'},
+    {q:'ㅂ',a:['M','D','B / P','G'],correct:2,hint:'자음 (jaeum)'},
+    {q:'ㅅ',a:['H','S','J','N'],correct:1,hint:'자음 (jaeum)'},
+    {q:'ㅇ',a:['N (silent/ng)','M','G','D'],correct:0,hint:'자음 (jaeum)'},
+    {q:'ㅈ',a:['B','J / CH','R','K'],correct:1,hint:'자음 (jaeum)'},
+    {q:'ㅎ',a:['S','G','H','N'],correct:2,hint:'자음 (jaeum)'},
+  ],
+  numbers:[
+    {q:'하나',a:['Ikki','Bir','Uch','To\'rt'],correct:1,hint:'숫자 (sutja)'},
+    {q:'둘',a:['Bir','Uch','Ikki','Besh'],correct:2,hint:'숫자 (sutja)'},
+    {q:'셋',a:['To\'rt','Uch','Ikki','Olti'],correct:1,hint:'숫자 (sutja)'},
+    {q:'넷',a:['Besh','Uch','Yetti','To\'rt'],correct:3,hint:'숫자 (sutja)'},
+    {q:'다섯',a:['Besh','Olti','To\'rt','Sakkiz'],correct:0,hint:'숫자 (sutja)'},
+    {q:'여섯',a:['Yetti','Besh','Olti','To\'qqiz'],correct:2,hint:'숫자 (sutja)'},
+    {q:'일곱',a:['Olti','Yetti','Sakkiz','O\'n'],correct:1,hint:'숫자 (sutja)'},
+    {q:'여덟',a:['To\'qqiz','Yetti','Sakkiz','O\'n'],correct:2,hint:'숫자 (sutja)'},
+    {q:'아홉',a:['Sakkiz','O\'n','To\'qqiz','Yetti'],correct:2,hint:'숫자 (sutja)'},
+    {q:'열',a:['To\'qqiz','O\'n besh','Yigirma','O\'n'],correct:3,hint:'숫자 (sutja)'},
+  ],
+  greeting:[
+    {q:'안녕하세요',a:['Xayr','Rahmat','Salom','Iltimos'],correct:2,hint:'인사 (insa)'},
+    {q:'감사합니다',a:['Salom','Rahmat','Kechirasiz','Ha'],correct:1,hint:'인사 (insa)'},
+    {q:'죄송합니다',a:['Kechirasiz','Rahmat','Salom','Yo\'q'],correct:0,hint:'인사 (insa)'},
+    {q:'괜찮아요',a:['Ha','Yo\'q','Yaxshi / Mayli','Rahmat'],correct:2,hint:'인사 (insa)'},
+    {q:'잘 지내요',a:['Xayr','Yaxshi bo\'ling','Keling','Yaxshi yuraman'],correct:3,hint:'인사 (insa)'},
+    {q:'안녕히 가세요',a:['Salom','Xayr (ketayotganga)','Rahmat','Ha'],correct:1,hint:'인사 (insa)'},
+    {q:'만나서 반가워요',a:['Kechirasiz','Tanishganimdan xursandman','Salom','Ha'],correct:1,hint:'인사 (insa)'},
+    {q:'처음 뵙겠습니다',a:['Yana ko\'rishamiz','Xayr','Tanishaylik','Birinchi uchrashuv'],correct:3,hint:'인사 (insa)'},
+    {q:'네',a:['Yo\'q','Ha','Belki','Bilmayman'],correct:1,hint:'인사 (insa)'},
+    {q:'아니요',a:['Ha','Belki','Yo\'q','Bilmayman'],correct:2,hint:'인사 (insa)'},
+  ],
+  colors:[
+    {q:'빨간색',a:['Ko\'k','Yashil','Qizil','Sariq'],correct:2,hint:'색깔 (saekkkal)'},
+    {q:'파란색',a:['Ko\'k','Qizil','Sariq','Yashil'],correct:0,hint:'색깔 (saekkkal)'},
+    {q:'노란색',a:['Ko\'k','Sariq','Oq','Qora'],correct:1,hint:'색깔 (saekkkal)'},
+    {q:'초록색',a:['Qizil','Ko\'k','Yashil','Sariq'],correct:2,hint:'색깔 (saekkkal)'},
+    {q:'하얀색',a:['Qora','Oq','Kulrang','Ko\'k'],correct:1,hint:'색깔 (saekkkal)'},
+    {q:'검은색',a:['Oq','Sariq','Qora','Ko\'k'],correct:2,hint:'색깔 (saekkkal)'},
+    {q:'분홍색',a:['To\'q sariq','Ko\'k','Qizil','Pushti'],correct:3,hint:'색깔 (saekkkal)'},
+    {q:'보라색',a:['Binafsha','Yashil','Ko\'k','Kulrang'],correct:0,hint:'색깔 (saekkkal)'},
+    {q:'주황색',a:['Sariq','To\'q sariq / Apelsin','Qizil','Yashil'],correct:1,hint:'색깔 (saekkkal)'},
+    {q:'회색',a:['Qora','Oq','Binafsha','Kulrang'],correct:3,hint:'색깔 (saekkkal)'},
+  ],
+  food:[
+    {q:'밥',a:['Non','Guruch / Osh','Go\'sht','Suv'],correct:1,hint:'음식 (eumsik)'},
+    {q:'물',a:['Ovqat','Choy','Suv','Sharbat'],correct:2,hint:'음식 (eumsik)'},
+    {q:'고기',a:['Baliq','Sabzavot','Go\'sht','Non'],correct:2,hint:'음식 (eumsik)'},
+    {q:'생선',a:['Tovuq','Baliq','Tuxum','Yog\''],correct:1,hint:'음식 (eumsik)'},
+    {q:'김치',a:['Kimchi (achchiq karam)','Osh','Shurpa','Pirog'],correct:0,hint:'음식 (eumsik)'},
+    {q:'라면',a:['Non','Ramen (shirak','Ko\'cha ovqati','Salat'],correct:1,hint:'음식 (eumsik)'},
+    {q:'빵',a:['Guruch','Non','Makaron','Go\'sht'],correct:1,hint:'음식 (eumsik)'},
+    {q:'계란',a:['Tuxum','Baliq','Go\'sht','Qovoq'],correct:0,hint:'음식 (eumsik)'},
+    {q:'치킨',a:['Baliq','Mol go\'shti','Tovuq','Cho\'chqa'],correct:2,hint:'음식 (eumsik)'},
+    {q:'커피',a:['Choy','Sharbat','Suv','Qahva'],correct:3,hint:'음식 (eumsik)'},
+  ],
+  days:[
+    {q:'월요일',a:['Seshanba','Dushanba','Chorshanba','Juma'],correct:1,hint:'요일 (yoil)'},
+    {q:'화요일',a:['Dushanba','Payshanba','Seshanba','Shanba'],correct:2,hint:'요일 (yoil)'},
+    {q:'수요일',a:['Chorshanba','Seshanba','Juma','Yakshanba'],correct:0,hint:'요일 (yoil)'},
+    {q:'목요일',a:['Shanba','Chorshanba','Payshanba','Dushanba'],correct:2,hint:'요일 (yoil)'},
+    {q:'금요일',a:['Juma','Payshanba','Yakshanba','Seshanba'],correct:0,hint:'요일 (yoil)'},
+    {q:'토요일',a:['Yakshanba','Juma','Shanba','Chorshanba'],correct:2,hint:'요일 (yoil)'},
+    {q:'일요일',a:['Seshanba','Yakshanba','Shanba','Dushanba'],correct:1,hint:'요일 (yoil)'},
+  ],
+};
+
+// ════════════════════════════════
+//  QUIZ STATE
+// ════════════════════════════════
+let qState = { cat:'', questions:[], idx:0, correct:0, answered:false };
+
+function startQuiz(cat){
+  qState.cat = cat;
+  qState.questions = shuffle([...QUIZZES[cat]]);
+  qState.idx = 0;
+  qState.correct = 0;
+  qState.answered = false;
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function shuffle(arr){ return arr.sort(()=>Math.random()-.5); }
+
+function renderQuestion(){
+  const qs = qState.questions;
+  const q  = qs[qState.idx];
+  const total = qs.length;
+
+  document.getElementById('quiz-progress').textContent = `${qState.idx+1} / ${total}`;
+  document.getElementById('quiz-score-live').textContent = `⭐ ${qState.correct}`;
+  document.getElementById('progress-bar').style.width = ((qState.idx+1)/total*100)+'%';
+  document.getElementById('q-kor').textContent = q.q;
+  document.getElementById('q-hint').textContent = q.hint + ' — ' + t('q_hint');
+  document.getElementById('q-feedback').textContent='';
+  document.getElementById('q-feedback').className='feedback';
+  document.getElementById('next-wrap').style.display='none';
+  qState.answered = false;
+
+  const wrap = document.getElementById('options-wrap');
+  // shuffle options while tracking correct answer text
+  const opts = q.a.map((text,i)=>({text,isCorrect:i===q.correct}));
+  const shuffled = shuffle([...opts]);
+  wrap.innerHTML = shuffled.map((o,i)=>
+    `<button class="option" onclick="selectOption(this,${o.isCorrect})">${o.text}</button>`
+  ).join('');
+}
+
+function selectOption(el, isCorrect){
+  if(qState.answered) return;
+  qState.answered = true;
+  document.querySelectorAll('.option').forEach(o=>{
+    o.classList.add('disabled');
+    o.onclick = null;
+  });
+  const fb = document.getElementById('q-feedback');
+  if(isCorrect){
+    el.classList.add('correct');
+    qState.correct++;
+    fb.textContent='✓ ' + (currentLang==='uz'?'To\'g\'ri!':currentLang==='ru'?'Правильно!':currentLang==='en'?'Correct!':'정답!');
+    fb.className='feedback correct';
+  } else {
+    el.classList.add('wrong');
+    fb.textContent='✗ ' + (currentLang==='uz'?'Noto\'g\'ri':currentLang==='ru'?'Неверно':currentLang==='en'?'Wrong':'오답');
+    fb.className='feedback wrong';
+    // highlight correct
+    document.querySelectorAll('.option').forEach(o=>{
+      const q = qState.questions[qState.idx];
+      if(o.textContent === q.a[q.correct]) o.classList.add('correct');
+    });
+  }
+  document.getElementById('next-wrap').style.display='block';
+}
+
+function nextQuestion(){
+  qState.idx++;
+  if(qState.idx >= qState.questions.length){
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult(){
+  const total = qState.questions.length;
+  const pct = Math.round(qState.correct/total*100);
+  document.getElementById('res-pct').textContent = pct+'%';
+  document.getElementById('res-correct').textContent = qState.correct;
+  document.getElementById('res-total-q').textContent = total;
+  document.getElementById('res-wrong').textContent = total-qState.correct;
+
+  let titleKey, msgKey;
+  if(pct>=90){ titleKey='r_excellent'; } else if(pct>=70){ titleKey='r_good'; } else if(pct>=50){ titleKey='r_ok'; } else { titleKey='r_low'; }
+  document.getElementById('res-title').textContent = t(titleKey);
+  document.getElementById('res-msg').textContent = qState.correct+' / '+total;
+
+  // save to history
+  const user = getSession();
+  if(user){
+    const data = getUserData(user);
+    data.history = data.history||[];
+    data.history.push({
+      cat: qState.cat,
+      pct,
+      date: new Date().toLocaleDateString(),
+    });
+    // streak
+    const today = new Date().toDateString();
+    if(data.lastDay !== today){
+      const yesterday = new Date(Date.now()-86400000).toDateString();
+      data.streak = data.lastDay===yesterday ? (data.streak||0)+1 : 1;
+      data.lastDay = today;
+    }
+    saveUserData(user, data);
+  }
+
+  showScreen('result');
+}
+
+function backToDash(){
+  const user = getSession();
+  if(user) openDash(user);
+  else showLogin();
+}
+
+function retryQuiz(){ startQuiz(qState.cat); }
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+(function init(){
+  // seed demo account
+  const users = getUsers();
+  if(!users['admin']){ users['admin']='1234'; saveUsers(users); }
+
+  const sess = getSession();
+  if(sess && getUsers()[sess]){
+    openDash(sess);
+  } else {
+    showLogin();
+  }
+  setLang('uz');
+})();
+</script>
+</body>
+</html>
